@@ -1,11 +1,15 @@
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 
 # Create your views here.
 def index(request):
     no_event_popup =  'no_event_popup' in request.COOKIES
     print("팝업 숨김 여부 : {}".format( no_event_popup ))
+    
+    # 현재 로그인된 사용자 아이디 
+    username = request.user.username if request.user.is_authenticated else ''
+    print("현재 로그인된 사용자 아이디 : {}".format(username))
     return render(request, 'cookie/index.html', {'no_event_popup': no_event_popup})
 
 
@@ -17,7 +21,7 @@ def event_popup(request):
     return response
 
 # /login
-def login(request):
+def login_view(request):
     if request.method == 'GET':
         # 쿠키 확인
         if 'login_username' in request.COOKIES:
@@ -35,17 +39,28 @@ def login(request):
         # 자동 로그인
         remember_me = request.POST.get('remember_me', 'off') == 'on'
         
-        # 로그인 처리 
-        user = authenticate(username=username, password=password)
-        
+        # 로그인 인증
+        user = authenticate(request, username=username, password=password)
         
         response = redirect('/')
-        # 아이디 저장
-        if remember_id:
-            # 쿠키 설정
-            response.set_cookie('login_username', username, max_age=60*60*24*7)     # 7일
+        
+        if user:
+            # 로그인 처리
+            login(request, user)
+            # ✅ 자동 로그인
+            if remember_me:
+                request.session.set_expiry(60*60*24*30)     # 30일
+            else:
+                request.session.set_expiry(0)               # 브라우저 종료시 세션 만료 
+        
+            # ✅ 아이디 저장
+            if remember_id:
+                # 쿠키 설정
+                response.set_cookie('login_username', username, max_age=60*60*24*7)     # 7일
+            else:
+                # 쿠키 삭제 
+                response.delete_cookie('login_username')
         else:
-            # 쿠키 삭제 
-            response.delete_cookie('login_username')
+            return render('/login?error=1')     # 로그인 실패 시 에러 페이지로 리다이렉트
         
         return response
