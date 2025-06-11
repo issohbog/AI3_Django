@@ -52,6 +52,7 @@ def login_view(request):
   # 로그인 화면 or 로그인 실패
   else:
     # form = AuthenticationForm()
+    print()
     form = LoginForm()
     
   return render(request, 'registration/login.html', {'form': form})

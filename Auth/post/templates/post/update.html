@@ -3,24 +3,43 @@
 {% block title %}게시글 수정{% endblock %}
 
 {% block content %}
-<div class="container">
-  <h2>게시글 수정</h2>
-  <form method="post">
-    {% csrf_token %}
-    <div class="mb-3">
-      {{ form.title.label_tag }}
-      {{ form.title }}
-      {{ form.title.errors }}
-    </div>
-    <div class="mb-3">
-      {{ form.content.label_tag }}
-      {{ form.content }}
-      {{ form.content.errors }}
-    </div>
-    <div class="d-grid my-3">
-      <button type="submit" class="btn btn-success">수정 완료</button>
-    </div>
-  </form>
-</div>
+  <div class="container my-5 py-5">
+    <h1 class="text-center fs-2">게시글 수정</h1>
+    <form method="post" action="/post/update/{{ post.id}}/">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="{{ form.title.id_for_label }}" class="form-label">제목</label>
+          {{ form.title }}
+        </div>
 
+        <div class="form-group">
+          <label for="{{ form.content.id_for_label }}" class="form-label">내용</label>
+          {{ form.content }}
+        </div>
+
+        <div class="d-grid row-gap-3 my-4">
+            <button type="submit" class="btn btn-primary">수정</button>
+            <button type="button" class="btn btn-danger" onclick="deletePost()">삭제</button>
+            <a href="/post/list" class="btn btn-secondary">목록</a>
+        </div>
+        </form>
+        <!--form 안에 form이 있는 문제를 해결하기 위해 delete를 위한 form을 바깥으로 빼고 js 로 해결  -->
+        <form action="/post/delete/{{ post.id }}/" method="post"
+          id="deleteForm">
+          {% csrf_token %}
+        </form>
+  </div>
+
+  <script>
+    function deletePost() {
+      const check = confirm("정말로 삭제하시겠습니까?");
+      const form = document.getElementById('deleteForm');
+      if (check) {
+        form.submit();
+      } else {
+        return false;
+      }
+
+    }
+  </script>
 {% endblock %}
