@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}게시글 목록{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <table class="table table-striped">
+        <thead class="table-dark">
+      <tr>
+        <th scope="col">번호</th>
+        <th scope="col">제목</th>
+        <th scope="col">작성자</th>
+        <th scope="col">작성일</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for post in posts %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>
+          <a href="{% url 'read' post.id %}">{{ post.title }}</a>
+        </td>
+        <td>{{ post.user.username }}</td>
+        <td>{{ post.created_at|date:"Y-m-d H:i" }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4">작성된 게시글이 없습니다.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    </table>
+  </div>
+
+{% endblock %}

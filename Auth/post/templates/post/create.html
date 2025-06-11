@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}게시글 작성{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <form method="post" action="/post/create/">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.title.label_tag }}
+            {{ form.title }}
+            {{ form.title.errors }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.content.label_tag }}
+            {{ form.content }}
+            {{ form.content.errors }}
+        </div>  
+        <div class="d-grid my-3">
+            <button type="submit" class="btn btn-primary">작성</button>
+        </div>
+    </form> 
+  </div>
+
+{% endblock %}
